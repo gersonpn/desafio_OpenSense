@@ -24,9 +24,11 @@ def informacoes(arquivo):
       texto_arquivo = soup.get_text()
       verificacao_cnpj = r'\d{14}'
       cnpj = re.findall(verificacao_cnpj, texto_arquivo)
-      return cnpj
+      resultado = len(cnpj)
+      return cnpj, resultado
 
-for cnpjs in arquivos:
-    caminho_arquivo = os.path.join(pasta, item)
+for elementos in arquivos:
+    caminho_arquivo = os.path.join(pasta, elementos)
     cnpjs = informacoes(caminho_arquivo)
-    print(f"CNPJs encontrados no arquivo {item}: {cnpjs}")
+    resultado = informacoes(caminho_arquivo)
+    print(f"itens {elementos}: {cnpjs}")
