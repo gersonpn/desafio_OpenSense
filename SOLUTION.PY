@@ -22,13 +22,35 @@ def informacoes(arquivo):
     with open(arquivo, 'r', encoding='utf-8', errors='ignore') as arq:
       soup = BeautifulSoup(arq, 'html.parser')
       texto_arquivo = soup.get_text()
+      info_tabela = soup.find('tbody', {'id': 'tituloContext'})
+
       verificacao_cnpj = r'\d{14}'
       cnpj = re.findall(verificacao_cnpj, texto_arquivo)
       resultado = len(cnpj)
-      return cnpj, resultado
+
+
+
+      pedido, deposito, titulo, ipc = [], [], [], []
+
+      if info_tabela is not None:
+        tr = info_tabela.find_all('tr')
+        for trs in tr:
+          colunas = trs.find_all('td')
+          pedido.append(colunas[0].text.strip())
+          deposito.append(colunas[1].text.strip())
+          titulo.append(colunas[2].text.strip())
+          ipc.append(colunas[3].text.strip()),
+
+      if info_tabela is None:
+        pedido.append('-')
+        deposito.append('-')
+        titulo.append('-')
+        ipc.append('-')
+
+      return cnpj, resultado, pedido, ipc, deposito, titulo
+
 
 for elementos in arquivos:
     caminho_arquivo = os.path.join(pasta, elementos)
-    cnpjs = informacoes(caminho_arquivo)
-    resultado = informacoes(caminho_arquivo)
-    print(f"itens {elementos}: {cnpjs}")
+    cnpj, resultado, pedido, ipc, deposito, titulo = informacoes(caminho_arquivo)
+    print(f"itens {elementos}: CNPJ: {cnpj}, Total: {resultado}, Pedido: {pedido}, IPC: {ipc}, Data: {deposito}, Título: {titulo}")
