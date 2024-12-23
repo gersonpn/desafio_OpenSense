@@ -16,7 +16,6 @@ if any(not arquivo.lower().startswith("arq") for arquivo in arquivos):
       nova_alteracao = os.path.join(pasta, nome)
       os.rename(caminho, nova_alteracao)
 
-
 def informacoes(arquivo):
     with open(arquivo, 'r', encoding='utf-8', errors='ignore') as arq:
       soup = BeautifulSoup(arq, 'html.parser')
@@ -34,7 +33,6 @@ def informacoes(arquivo):
           resultado += 1
           colunas = trs.find_all('td')
 
-
           info = {
              "pedido":colunas[0].text.strip()[0:4],
              "deposito":colunas[1].text.strip(),
@@ -51,10 +49,7 @@ def informacoes(arquivo):
           if info['ipc'] in ['', '-']:
              info['ipc'] = '...'
 
-
           dados_tabela.append(info)
-
-
 
       if info_tabela is None:
          dados_tabela.append({
