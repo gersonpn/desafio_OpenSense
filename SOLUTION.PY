@@ -8,8 +8,7 @@ pasta = "D:\\Documents\\teste_open_sense\\PATENTES"
 
 arquivos = os.listdir(pasta)
 
-# O primeiro passo realizado nesse código, foi criar a seguinte estruturação do nome dos arquivos, conforme especificado.
-if any(not arquivo.lower().startswith("arq") for arquivo in arquivos): # Dessa forma, primeiramento verifico se os nomes seguem o padrão solicitado pelo desafio arq1.html, etc.
+if any(not arquivo.lower().startswith("arq") for arquivo in arquivos):
   for numero, item in enumerate(arquivos, start=1):
       caminho = os.path.join(pasta,item)
       alteracao = os.path.splitext(item)[1]
@@ -17,8 +16,8 @@ if any(not arquivo.lower().startswith("arq") for arquivo in arquivos): # Dessa f
       nova_alteracao = os.path.join(pasta, nome)
       os.rename(caminho, nova_alteracao)
 
-# extração das informações de dentro do arquivo
-def informacoes(arquivo): # A funação informações tem como o objetivo realizar a extração das informações presente no nos arquivos.
+
+def informacoes(arquivo):
     with open(arquivo, 'r', encoding='utf-8', errors='ignore') as arq:
       soup = BeautifulSoup(arq, 'html.parser')
       texto_arquivo = soup.get_text()
