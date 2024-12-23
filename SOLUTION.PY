@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import os
 from bs4 import BeautifulSoup
-from collections import Counter
+from natsort import natsorted as nt
 
 pasta = "D:\\Documents\\teste_open_sense\\PATENTES"
 
@@ -17,7 +17,6 @@ if any(not arquivo.lower().startswith("arq") for arquivo in arquivos): # Dessa f
       nova_alteracao = os.path.join(pasta, nome)
       os.rename(caminho, nova_alteracao)
 
-
 # extração das informações de dentro do arquivo
 def informacoes(arquivo): # A funação informações tem como o objetivo realizar a extração das informações presente no nos arquivos.
     with open(arquivo, 'r', encoding='utf-8', errors='ignore') as arq:
@@ -25,24 +24,38 @@ def informacoes(arquivo): # A funação informações tem como o objetivo realiz
       texto_arquivo = soup.get_text()
       info_tabela = soup.find('tbody', {'id': 'tituloContext'})
 
-
       cnpj = re.findall(r'\d{14}', texto_arquivo)
-      resultado = len(cnpj)
+      resultado = 0
+
       dados_tabela = []
 
       if info_tabela is not None:
         tr = info_tabela.find_all('tr')
         for trs in tr:
+          resultado += 1
           colunas = trs.find_all('td')
 
-          info = {
-             "pedido":colunas[0].text.strip()[0:4] ,
-             "deposito":colunas[1].text.strip(),
-             "titulo":colunas[2].text.strip()[0:4],
-             "ipc":colunas[3].text.strip(),
 
+          info = {
+             "pedido":colunas[0].text.strip()[0:4],
+             "deposito":colunas[1].text.strip(),
+             "titulo":colunas[2].text.strip()[0:10],
+             "ipc":colunas[3].text.strip(),
           }
+
+          if info['pedido'] == '' :
+             info['pedido'] = '...'
+          if info['deposito'] == '':
+             info['deposito'] = '...'
+          if info['titulo'] == '':
+             info['titulo'] = '...'
+          if info['ipc'] in ['', '-']:
+             info['ipc'] = '...'
+
+
           dados_tabela.append(info)
+
+
 
       if info_tabela is None:
          dados_tabela.append({
@@ -52,13 +65,11 @@ def informacoes(arquivo): # A funação informações tem como o objetivo realiz
             "ipc" : '...'
          })
 
-
-
       return cnpj, resultado, dados_tabela
 
 dados_df = []
 
-for elementos in arquivos:
+for elementos in nt(arquivos):
     caminho_arquivo = os.path.join(pasta, elementos)
     cnpj, resultado, dados_tabela = informacoes(caminho_arquivo)
 
@@ -73,8 +84,5 @@ for elementos in arquivos:
             'IPC': linha['ipc']
         })
 
-
-
 df = pd.DataFrame(dados_df)
-df_sorted = df.sort_values(by='Arquivo', ascending=False)
-df_sorted.to_html("PATENTES.HTML", index=False)
+df.to_html("PATENTES.HTML", index=False)
